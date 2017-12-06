@@ -1,0 +1,22 @@
+body{
+    height: 100% !important;
+    background-image:url(../../../assets/images/login.jpg); 
+    background-repeat:no-repeat; 
+    background-size:100% 100%;
+    -moz-background-size:100% 100%;
+}
+
+.login-box-body{
+    border: 3px solid #e2f2ff;
+}
+
+.login-box, .register-box{
+    margin: 15% auto !important;
+}
+.pwd-height a {
+    line-height: 43px;
+}
+
+.pwd-height  {
+    text-align: right;
+}

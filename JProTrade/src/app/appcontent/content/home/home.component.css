@@ -1,0 +1,13 @@
+.box-header{
+    border-bottom: 1px solid #c2c2c2;
+    color: green;
+}
+.box-body{
+    color: rgb(103, 104, 103);
+}
+label{
+    float:right;
+    height: 29px;
+    line-height: 29px;
+    margin-right: 10px;
+}

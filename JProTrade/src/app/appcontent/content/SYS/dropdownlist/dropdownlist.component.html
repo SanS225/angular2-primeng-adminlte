@@ -1,0 +1,230 @@
+<section class="content">
+    <div class="box box-info">
+        <form class="form-horizontal" #searchForm="ngForm">
+          <div class="box-header with-border">
+            <h3 class="box-title">查询条件</h3>
+            <div class="box-tools pull-right">
+              <button type="button" class="btn btn-box-tool" (click)="shrinkflg=='in'?shrinkflg='out':shrinkflg='in'" data-widget="collapse">
+                <i class="fa fa-minus" [ngClass]="{'fa-minus':shrinkflg=='in','fa-plus':shrinkflg=='out'}"></i>
+              </button>
+            </div>
+          </div>
+          <div class="box-body" [@shrinkOut]="shrinkflg">
+            <div class="row">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label  class="col-sm-6 control-label">{{'SYS.DropDownList.DDLN'|translate}}</label>
+                <div class="col-sm-6">
+                  <p-dropdown name="name" [options]="dropdownName" placeholder="--please choose--" [(ngModel)]="queryFormData.ddDdlName"  [style]="{'width':'100%'}" ></p-dropdown>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="col-sm-6 control-label">{{'SYS.DropDownList.Description'|translate}}</label>
+                <div class="col-sm-6">
+                  <p-autoComplete name="description" [(ngModel)]="queryFormData.ddDdlDescription" [suggestions]="filteredDescriptionsSingle" [minLength]="1" field="ddDdlDescription" (completeMethod)="autoComplete($event)" [style]="{'width':'100%'}"></p-autoComplete>
+                </div>
+              </div>
+            </div>
+            </div>
+          </div>
+          <div class="box-footer" [@shrinkOut]="shrinkflg">
+            <button type="button" class="btn btn-info btn-sm pull-right" (click)="reset(searchForm)">{{'Common.Reset'|translate}}</button>
+            <button type="button" class="btn btn-info btn-sm pull-right" (click)="ddlSearch()">{{'Common.Search'|translate}}</button>
+          </div>
+        </form>
+    </div>
+    <p-growl [(value)]="msg"></p-growl>
+    <div class="box">
+        <div class="controll_button">
+          <button  class="btn btn-info btn-sm" type="button" pButton  icon="fa-plus" (click)="showNewDdl()"   label="{{'SYS.DropDownList.NewDDL'|translate}}"></button>
+          <button  class="btn btn-info btn-sm" type="button" pButton  icon="fa-upload" (click) = "showUpload()" label="{{'Common.upload'|translate}}"></button>
+          <button [disabled]="!dropdowns.length" class="btn btn-info btn-sm" type="button" pButton  icon="fa-download" (click) = "ddlExportCSV(ddlCsv)" label="{{'Common.Export'|translate}}"></button>
+          <!-- <div class="pull-right">		
+              <p-multiSelect class="labelhide" [options]="columnOptions" [(ngModel)]="cols" >
+              </p-multiSelect>
+          </div> -->
+        </div>
+        <p-dataTable [(value)]="dropdowns" selectionMode="single" reorderableColumns="true" [resizableColumns]="true" emptyMessage="" [scrollable]="true" [(selection)]="dropdown" (onRowSelect)="onRowSelect($event)" [responsive]="true">
+            <p-column *ngFor="let col of cols | slice:0:8" [field]="col.field" [sortable]="true" [header]="col.header"></p-column>
+        </p-dataTable>
+        <button type="button" pButton icon="fa-plus" style="float:left;margin-top: 5px;" (click)="showDialogToAdd()" label="{{'Common.add'|translate}}"></button>
+        <p-paginator rows="10" [rowsPerPageOptions]="[10,20,30]" totalRecords="{{totalRecords}}" (onPageChange)="paginate($event)"></p-paginator>
+    </div>
+    <div class="exprotTable">
+      <p-dataTable #ddlCsv [rows]="1" [paginator]="true" [(value)]="exportDdl" exportFilename="SYSDropDownList">
+          <p-column *ngFor="let col of cols" [field]="col.field" [header]="col.header" autoWidth="true"></p-column>
+      </p-dataTable>
+    </div>
+</section>
+<!-- NEW DDL -->
+<div class="modal fade" [ngClass]="{in:displayDdlDialog, show:displayDdlDialog}"  role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-lg modalDefault">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"  (click)="cancelDdl()">
+                &times;
+            </button>
+            <h4 class="modal-title">
+                {{'SYS.DropDownList.DefineDL'|translate}}
+            </h4>
+        </div>
+        <div class="modal-body">
+          <form class="form-horizontal"  #ddlForm="ngForm" >
+              <div class="box-body">
+                  <div class="form-group">
+                    <div class="row">
+                       <div class="col-md-6" [ngClass]="{'form-error': isValidate(ddDdlName)}">
+                          <label class="col-sm-6 control-label">{{'SYS.DropDownList.Name'|translate}}</label>
+                          <div class="col-sm-6">
+                              <input type="text" class="form-control" #ddDdlName="ngModel" name="ddDdlName" required value="{{defineDropdown.ddDdlName | uppercase}}" maxlength="30" [(ngModel)]="defineDropdown.ddDdlName">
+                              <p *ngIf="isValidate(ddDdlName)">请输入名称</p>
+                          </div>
+                       </div>
+                       <div class="col-md-6" [ngClass]="{'form-error': isValidate(ddDdlDescription)}">
+                          <label class="col-sm-6 control-label">{{'SYS.DropDownList.Description'|translate}}</label>
+                          <div class="col-sm-6">
+                              <input type="text" class="form-control" #ddDdlDescription="ngModel" name="ddDdlDescription" required value="{{defineDropdown.ddDdlDescription | uppercase}}" maxlength="50" [(ngModel)]="defineDropdown.ddDdlDescription">
+                              <p *ngIf="isValidate(ddDdlDescription)">请输入说明</p>
+                          </div>
+                       </div>
+                    </div>
+                    <div class="modal_button">
+                        <button class="btn btn-info btn-sm pull-right" (click)="cancelDdl()">{{'Common.Cancel'|translate}}</button>
+                        <button class="btn btn-info btn-sm pull-right" (click)="saveDdl(ddlForm, $event)">{{'Common.Ok'|translate}}</button>
+                    </div>
+                  </div>
+              </div>
+          </form>
+        </div>
+    </div>
+</div>    
+<!-- Upload Excel -->
+<div class="modal fade" [ngClass]="{in:displayUploadDialog, show:displayUploadDialog}"  role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-md modalDefault">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"  (click)="cancelUpload()">
+                &times;
+            </button>
+            <h4 class="modal-title">
+                {{'SYS.DropDownList.UploadExcel'|translate}}
+            </h4>
+        </div>
+        <div class="modal-body">
+            <p-fileUpload name="file" url="{{uploadExcel}}
+            " method="post" (onUpload)="onUpload($event)" 
+              accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" maxFileSize="1000000">
+              <ul *ngIf="uploadedFiles.length">
+              </ul>
+            </p-fileUpload>
+        </div>
+    </div>
+</div>
+
+<!-- ADD/UPDATE DDLDATA -->
+<div class="modal fade" [ngClass]="{in:displayDdlDataDialog, show:displayDdlDataDialog}"  role="dialog"  aria-hidden="true">
+    <div class="modal-dialog modal-lg modalDefault">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true"  (click)="cancel()">
+                &times;
+            </button>
+            <h4 class="modal-title">
+                {{'SYS.DropDownList.DDLdetails'|translate}}
+            </h4>
+        </div>
+        <div class="modal-body">
+          <form class="form-horizontal"  #ddlDataForm="ngForm" >
+              <div class="box-body">
+                  <div class="form-group">
+                    <div class="row margin_top_20">
+                       <div class="col-md-6" [ngClass]="{'form-error': isValidate(ddDdlName) && !isUpdate }">
+                          <label class="col-sm-6 control-label">{{'SYS.DropDownList.Name'|translate}}</label>
+                          <div class="col-sm-6">
+                              <p-dropdown #ddDdlName="ngModel" placeholder="--please choose--" [required]="true" name="ddDdlName" [options]="dropdownName" [disabled]="isUpdate" [(ngModel)]="dropdown.ddDdlName"  [style]="{'width':'100%'}"></p-dropdown>
+                              <p *ngIf="isValidate(ddDdlName) && !isUpdate">请选择名称</p>
+                          </div>
+                       </div>
+                    </div>
+                    <div class="row margin_top_20">
+                        <div class="col-md-6" [ngClass]="{'form-error': isValidate(ddDdlValue) && !isUpdate}">
+                           <label class="col-sm-6 control-label">{{'SYS.DropDownList.Value'|translate}}</label>
+                           <div class="col-sm-6">
+                              <input type="text" #ddDdlValue="ngModel" required name="ddDdlValue" value="{{dropdown.ddDdlValue | uppercase}}" [disabled]="isUpdate" maxlength="50" [(ngModel)]="dropdown.ddDdlValue">
+                              <p *ngIf="isValidate(ddDdlValue) && !isUpdate">请输入值</p>
+                           </div>
+                        </div>
+                        <div class="col-md-6">
+                          <label class="col-sm-6 control-label">{{'SYS.DropDownList.Description'|translate}}</label>
+                          <div class="col-sm-6">
+                              <p-autoComplete name="ddDdlDescription" [(ngModel)]="dropdown.ddDdlDescription" [suggestions]="filteredDescriptionsSingle" [minLength]="1" field="ddDdlDescription" (completeMethod)="autoComplete($event)" [style]="{'width':'100%'}"></p-autoComplete>
+                          </div>
+                        </div>
+                    </div>      
+                    <div class="row margin_top_20">
+                        <div class="col-md-6">
+                           <label class="col-sm-6 control-label">{{'SYS.DropDownList.ValueDescription'|translate}}</label>
+                           <div class="col-sm-6">
+                              <input type="text" name="ddDdlValueDescription"  maxlength="50" [(ngModel)]="dropdown.ddDdlValueDescription">
+                           </div>
+                        </div>
+                        <div class="col-md-6">
+                          <label class="col-sm-6 control-label">{{'SYS.DropDownList.AlternateDescription'|translate}}</label>
+                          <div class="col-sm-6">
+                              <input type="text" name="ddDdlValueAltDescription"  maxlength="50" [(ngModel)]="dropdown.ddDdlValueAltDescription">
+                          </div>
+                        </div>
+                    </div> 
+                    <div class="row margin_top_20">
+                        <div class="col-md-6">
+                           <label class="col-sm-6 control-label">{{'SYS.DropDownList.Group'|translate}}</label>
+                           <div class="col-sm-6">
+                              <input type="text" name="ddDdlGroup" value="{{dropdown.ddDdlGroup | uppercase}}"  maxlength="50" [(ngModel)]="dropdown.ddDdlGroup">
+                           </div>
+                        </div>
+                        <div class="col-md-6">
+                          <label class="col-sm-6 control-label">{{'SYS.DropDownList.Tag'|translate}}</label>
+                          <div class="col-sm-6">
+                              <input type="text" name="ddDdlTag"  maxlength="50" [(ngModel)]="dropdown.ddDdlTag">
+                          </div>
+                        </div>
+                    </div>
+                    <div class="row margin_top_20">
+                      <div class="col-md-6"  [ngClass]="{'form-error': isValidate(ddDdlValueStartDate)}">
+                          <label class="col-sm-6 control-label">{{'SYS.DropDownList.ESD'|translate}}</label>
+                          <div class="col-sm-6">
+                            <p-calendar #ddDdlValueStartDate="ngModel" [style]="{'width':'100%'}" name="ddDdlValueStartDate" [required]="true" [readonlyInput]="true" [(ngModel)]="dropdown.ddDdlValueStartDate" dateFormat="yy-mm-dd" [monthNavigator]="true" [yearNavigator]="true" yearRange="2000:2030"></p-calendar>
+                            <p *ngIf="isValidate(ddDdlValueStartDate)">请输入开始时间</p>
+                          </div>
+                      </div>
+                      <div class="col-md-6">
+                        <label class="col-sm-6 control-label">{{'SYS.DropDownList.EED'|translate}}</label>
+                        <div class="col-sm-6">
+                            <p-calendar name="ddDdlValueEndDate" [style]="{'width':'100%'}" [(ngModel)]="dropdown.ddDdlValueEndDate" [readonlyInput]="true" dateFormat="yy-mm-dd" [monthNavigator]="true" [yearNavigator]="true" yearRange="2000:2030"></p-calendar>
+                        </div>
+                      </div>
+                  </div>  
+                  <div class="row margin_top_20">
+                      <div class="col-md-6">
+                         <label class="col-sm-6 control-label">{{'SYS.DropDownList.InactiveFlag'|translate}}</label>
+                         <div class="col-sm-6">
+                            <p-radioButton  name="dinactive" label="{{'Common.Y'|translate}}" value='Y' [(ngModel)]="dropdown.ddDdlValueInactiveFlag"></p-radioButton>
+                            <p-radioButton  name="dinactive" label="{{'Common.N'|translate}}" value='N'[(ngModel)]="dropdown.ddDdlValueInactiveFlag"></p-radioButton>
+                         </div>
+                      </div>
+                  </div>
+                    <div class="modal_button">
+                        <!-- <button type="button" pButton icon="fa-close" (click)="cancel()" label="{{'Common.Cancel'|translate}}"></button>
+                        <button *ngIf="isUpdate" type="button" pButton icon="fa-close" (click)="delete()" label="{{'Common.Delete'|translate}}"></button>
+                        <button *ngIf="isUpdate" type="submit" pButton icon="fa-check" (click)="update(ddlDataForm, $event)" label="{{'Common.Update'|translate}}"></button>
+                        <button *ngIf="!isUpdate" type="submit" pButton icon="fa-check" (click)="save(ddlDataForm, $event)" label="{{'Common.Save'|translate}}"></button> -->
+                        <button type="button" class="btn btn-info btn-sm pull-right" (click)="cancel()">{{'Common.Cancel'|translate}}</button>
+                        <button *ngIf="isUpdate" class="btn btn-info btn-sm pull-right" type="button" (click)="delete()">{{'Common.Delete'|translate}}</button>
+                        <button *ngIf="isUpdate" class="btn btn-info btn-sm pull-right" type="submit" (click)="update(ddlDataForm, $event)">{{'Common.Update'|translate}}</button>
+                        <button *ngIf="!isUpdate" class="btn btn-info btn-sm pull-right" type="submit" (click)="save(ddlDataForm, $event)">{{'Common.Save'|translate}}</button>
+                    </div>
+                  </div>
+              </div>
+          </form>
+        </div>
+    </div>
+</div>   

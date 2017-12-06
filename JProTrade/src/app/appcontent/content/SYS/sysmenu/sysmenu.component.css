@@ -1,0 +1,20 @@
+.submenu{
+    list-style-type: none;  
+    padding: 0px;
+}
+.submenu li {
+    width: 100px;
+    /* width: 18%; */
+    /* border: 1px solid gray; */
+    padding: 2px;
+    text-align: center;
+    margin: 5px;
+    float: left;
+}
+.submenu li a i {
+    display: block;
+    font-size: 40px;
+}
+.box-header{
+    box-shadow: 0 2px 10px grey;
+}

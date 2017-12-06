@@ -1,0 +1,36 @@
+.box-footer button {
+    margin: 5px 0px 0px 10px;
+}
+.autoInput input{
+    width: 100%;
+}
+.exprotTable{
+    display: none;
+}
+.controll_button {
+    margin: 5px 0px 10px 0px;
+}
+.controll_button button {
+    display: inline-block;
+    margin-top: 5px;
+}
+.table_data{
+    overflow-y: hidden;
+}
+.modalWidth{
+    width: 80%;
+}
+.modal_button{
+    margin-top: 20px;
+}
+.modal_button button {
+    margin-left: 10px;
+}
+.margin_top_20{
+    margin-top: 5px !important;
+}
+@media (max-width: 767px){
+    .margin_top_20{
+        margin-top: 0px !important;
+    }
+ }

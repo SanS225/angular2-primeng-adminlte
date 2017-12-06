@@ -1,0 +1,57 @@
+/* You can add global styles to this file, and also import other style files */
+html, body{
+    height: 100% !important;
+}
+a{
+    cursor:pointer;
+}
+.showMsg{
+    z-index: 10000 !important;
+    position: fixed !important;
+}
+.ui-autocomplete .ui-autocomplete-input{
+    width: 100% !important;
+}
+.ui-datatable-resizable {
+    margin-bottom: 0px !important;
+}
+.ui-datatable .ui-datatable-scrollable-body{
+    text-align: center !important;
+}
+.modalDefault{
+    background-color: #ffffff;
+}
+
+.form-error input {
+    border: 1px solid red !important;
+}
+.form-error label, .form-error p {
+    color: red !important;
+}
+.modal-body input{
+    width: 100% !important;
+}
+app-root,app-content,.wx_component,.wrapper {
+  height: 100%; 
+}
+.content-wrapper {
+    /* height: 100%; */
+    min-height: -webkit-calc(100% - 101px);
+    max-height: -webkit-calc(100% - 101px);
+    min-height: -moz-calc(100% - 101px);
+    max-height: -moz-calc(100% - 101px);
+    min-height: calc(100% - 101px);
+    max-height: calc(100% - 101px);
+    overflow-y: scroll;
+    overflow-x: hidden; 
+}
+.modal {
+overflow-y: auto !important; 
+}
+/* .wrapper{
+    overflow: hidden !important;
+} */
+tr>td{
+    overflow: hidden!important;
+    text-overflow: ellipsis!important;
+}

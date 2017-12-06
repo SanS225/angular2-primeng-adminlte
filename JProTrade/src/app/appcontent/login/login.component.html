@@ -1,0 +1,34 @@
+<body class="hold-transition login-page">
+        <p-growl [(value)]="msg"></p-growl>
+        <div class="login-box">
+            <div class="login-box-body">
+                <p class="login-box-msg"><b>{{ 'login' | translate }}</b></p>
+                <form   #loginform="ngForm">
+                    <div class="form-group has-feedback" [ngClass]="{'form-error': isValidate(urId)}">
+                        <input name="urId" type="text" class="form-control" placeholder="用户名" [(ngModel)]="user.urId" (focus)="clearerror()" required  #urId="ngModel">
+                        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                        <p *ngIf="isValidate(urId)">请输入用户名</p>
+                    </div>
+                    <div class="form-group has-feedback" [ngClass]="{'form-error': isValidate(urPassword)}">
+                        <input name="urPassword" type="password" class="form-control" placeholder="密码" [(ngModel)]="user.urPassword" (focus)="clearerror()" required #urPassword="ngModel" >
+                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                        <p *ngIf="isValidate(urPassword)">请输入密码</p>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-control" [(ngModel)]="user.language" name="language" (change)="changeLanguage()">
+                            <option value="en">English</option>
+                            <option value="zh">简体中文</option>
+                        </select>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <button type="submit" class="btn btn-primary btn-block btn-sm" [disabled]="!loginform.form.valid" (click)="login(loginform, $event)">登入</button>
+                        </div>
+                        <div class="col-xs-6 pwd-height">
+                            <button type="button" class="btn btn-primary btn-block btn-sm">修改密码</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </body>      

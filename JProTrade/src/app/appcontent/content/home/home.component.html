@@ -1,0 +1,123 @@
+<section class="content">
+  <div class="row">
+    <div class="col-md-12">
+      <!-- Horizontal Form -->
+      <div class="box box-info">
+        <div class="box-header with-border">
+          <h3 class="box-title">个股推荐</h3>
+          <div class="box-body">
+            <div class="row table-nowrap">
+
+              <div class="col-sm-2">
+                <label class="control-label">股票简称:</label>
+              </div>
+              <div class="col-sm-2">
+                <p-dropdown name="name" [options]="dropdownName" [(ngModel)]="shares.Gname" placeholder="请选择"></p-dropdown>
+              </div>
+              <div class="col-sm-2">
+                <label class="control-label">股票代码:</label>
+              </div>
+              <div class="col-sm-2">
+                <p-autoComplete [(ngModel)]="shares.Gcode" [suggestions]="results" (completeMethod)="filterFmFormNameSingle($event)"></p-autoComplete>
+              </div>
+              <div class="row">
+                <div class="col-sm-3" style="text-align:left">
+                  <button class="btn btn-info btn-sm" type="button" pButton (click)="searchPage()" label="查询"></button>
+                  <button class="btn btn-info btn-sm" type="button" pButton (click)="Reset()" label="重置"></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="div-top">
+        <p-fileUpload chooseLabel="上传" mode="basic" icon="fa-upload" name="file" url="./upload.php" method="post" maxFileSize="1000000"
+          (onUpload)="onUpload($event)"></p-fileUpload>
+        <button id="buttonExport" class="btn btn-info btn-sm" type="button" pButton icon="fa-download" style="float:left" (click)="dt.exportCSV()"
+          label="导出"></button>
+      </div>
+      <p-dataTable #dt [(value)]="gupiao" selectionMode="single" [(selection)]="selectedCar" (onRowSelect)="onRowSelect($event)"
+        [paginator]="true" [rows]="5" [rowsPerPageOptions]="[5,10,20]" sortMode="multiple">
+        <p-header>个股推荐</p-header>
+        <p-column field="Gcode" header="股票代码" [sortable]="true"></p-column>
+        <p-column field="Gname" header="股票简称" [sortable]="true"></p-column>
+        <p-column field="Glevel" header="推荐级别" [sortable]="true"></p-column>
+        <p-column field="Gdate" header="推荐日期" [sortable]="true"></p-column>
+        <p-column field="Recommender" header="推荐人员" [sortable]="true"></p-column>
+        <p-column field="Gfile" header="推荐报告文件" [sortable]="true"></p-column>
+        <p-footer>
+          <div class="ui-helper-clearfix" style="width:100%">
+            <button type="button" pButton icon="fa-plus" style="float:left" (click)="showDialogToAdd()" label="新增"></button>
+          </div>
+        </p-footer>
+      </p-dataTable>
+    </div>
+    <div class="col-sm-14">
+      <!-- <p-paginator rows="10" totalRecords="{{totalRecords}}" [rowsPerPageOptions]="[10,20,30]" (onPageChange)="paginate($event)"></p-paginator> -->
+    </div>
+
+    <p-dialog header="Car Details" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true">
+      <div class="ui-grid ui-grid-responsive ui-fluid" *ngIf="selectedValue">
+        <div class="ui-grid-row" style="width:400px">
+          <div class="ui-grid-col-4">
+            <label for="Gcode">股票代码:</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText id="Gcode" [(ngModel)]="selectedValue.Gcode" />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="Gname">股票简称：</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <p-dropdown name="Gname" [options]="dropdownName" [(ngModel)]="selectedValue.Gname" placeholder="请选择" [style]="{'width':'150px'}"></p-dropdown>
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="Glevel">推荐级别：</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText id="Glevel" [(ngModel)]="selectedValue.Glevel" />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="Gdate">推荐日期：</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText id="Gdate" [(ngModel)]="selectedValue.Gdate" />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="Recommender">推荐人员：</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText id="Recommender" [(ngModel)]="selectedValue.Recommender" />
+          </div>
+        </div>
+        <div class="ui-grid-row">
+          <div class="ui-grid-col-4">
+            <label for="Gfile">推荐报告文件：</label>
+          </div>
+          <div class="ui-grid-col-8">
+            <input pInputText id="Gfile" [(ngModel)]="selectedValue.Gfile" />
+          </div>
+        </div>
+      </div>
+      <p-footer>
+        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+          <button type="button" pButton icon="fa-close" (click)="delete()" label="删除"></button>
+          <button type="button" pButton icon="fa-check" (click)="save()" label="保存"></button>
+        </div>
+      </p-footer>
+    </p-dialog>
+  </div>
+
+</section>
